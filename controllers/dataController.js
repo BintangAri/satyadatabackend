@@ -7,20 +7,29 @@ export const loginUser = async (req, res) => {
     if (!username || !password) {
       return res.status(400).json({ message: "Username dan password wajib diisi." });
     }
+
     const { data: users, error: userError } = await supabase
       .from("users")
       .select("*")
       .eq("username", username.trim());
+
     if (userError) throw userError;
+
     if (users.length === 0) {
       return res.status(404).json({ message: "Username tidak ditemukan." });
     }
+
     const user = users[0];
-    const passwordMatch = (password === user.password); // Perbandingan plaintext (tidak aman)
+
+    // REVISI: Tambahkan .trim() untuk mengabaikan spasi pada input dan data di database
+    const passwordMatch = (password.trim() === user.password.trim());
+
     if (!passwordMatch) {
       return res.status(401).json({ message: "Password salah." });
     }
+
     res.status(200).json({ message: "Login berhasil!", user: { id: user.id, username: user.username } });
+
   } catch (error) {
     console.error("Login error:", error.message);
     res.status(500).json({ message: "Terjadi kesalahan pada server." });
