@@ -1,22 +1,54 @@
-// /server/index.js
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import dataRoutes from "./routes/dataRoutes.js";
+import { 
+  loginUser, 
+  getAllData, 
+  getLokasi, 
+  getKomoditas, 
+  postInputData, 
+  updateData, 
+  deleteData 
+} from "./controllers/dataController.js"; // Pastikan path ini benar
 
 dotenv.config();
-
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// Konfigurasi CORS untuk production dan development
+const whitelist = [
+  'http://localhost:3000',                  // Alamat development
+  'https://satyadatafrontend.vercel.app'     // Alamat production Anda
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Izinkan request tanpa 'origin' (seperti dari Postman atau server-side)
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
-// Main Route
-app.use("/api", dataRoutes);
+// --- ROUTES ---
+// Auth
+app.post("/api/login", loginUser);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server backend berjalan di http://localhost:${PORT}`);
-});
+// Master Data
+app.get("/api/lokasi", getLokasi);
+app.get("/api/komoditas", getKomoditas);
+
+// CRUD Operations
+app.get("/api/data", getAllData);
+app.post("/api/data", postInputData);
+app.put("/api/data/:id", updateData);
+app.delete("/api/data/:id", deleteData);
+
+
+// Export app untuk Vercel
+export default app;
