@@ -9,33 +9,19 @@ import {
   postInputData, 
   updateData, 
   deleteData 
-} from "./controllers/dataController.js"; // Pastikan path ini benar
+} from "./controllers/dataController.js"; // Pastikan path ini benar jika struktur folder Anda berbeda
 
 dotenv.config();
 const app = express();
 
-// Konfigurasi CORS untuk production dan development
-const whitelist = [
-  'http://localhost:3000',                  // Alamat development
-  'https://satyadatafrontend.vercel.app'     // Alamat production Anda
-];
+// Mengizinkan semua permintaan cross-origin
+app.use(cors());
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Izinkan request tanpa 'origin' (seperti dari Postman atau server-side)
-    if (!origin || whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-};
-
-app.use(cors(corsOptions));
-
+// Middleware untuk membaca body JSON
 app.use(express.json());
 
 // --- ROUTES ---
+
 // Auth
 app.post("/api/login", loginUser);
 
