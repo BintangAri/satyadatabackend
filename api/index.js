@@ -1,7 +1,8 @@
+// File: /api/index.js
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-// Path import diubah karena file ini pindah folder
 import { 
   loginUser, 
   getAllData, 
@@ -15,11 +16,10 @@ import {
 dotenv.config();
 const app = express();
 
-// Mengizinkan semua permintaan cross-origin
 app.use(cors());
 app.use(express.json());
 
-// --- DEFINISI ROUTES LANGSUNG DI SINI ---
+// --- PASTIKAN SEMUA RUTE INI ADA ---
 app.post("/api/login", loginUser);
 app.get("/api/lokasi", getLokasi);
 app.get("/api/komoditas", getKomoditas);
