@@ -21,7 +21,7 @@ export const loginUser = async (req, res) => {
 
     const user = users[0];
 
-    // REVISI: Tambahkan .trim() untuk mengabaikan spasi pada input dan data di database
+    // Perbandingan plaintext (tidak aman) dengan trim
     const passwordMatch = (password.trim() === user.password.trim());
 
     if (!passwordMatch) {
@@ -80,13 +80,13 @@ export const getKomoditas = async (req, res) => {
 // --- DATA SUBMISSION (CREATE) ---
 export const postInputData = async (req, res) => {
   try {
-    const { lokasi_id, komoditas_id, harga_per_kg, nama_petugas } = req.body;
-    if (!lokasi_id || !komoditas_id || !harga_per_kg || !nama_petugas) {
+    const { lokasi_id, komoditas_id, harga_per_kg, nama_petugas, stok_awal } = req.body;
+    if (!lokasi_id || !komoditas_id || harga_per_kg === undefined || !nama_petugas || stok_awal === undefined) {
       return res.status(400).json({ message: "Semua field wajib diisi." });
     }
     const { data, error } = await supabase
       .from("input_data")
-      .insert([{ lokasi_id, komoditas_id, harga_per_kg, nama_petugas }])
+      .insert([{ lokasi_id, komoditas_id, harga_per_kg, nama_petugas, stok_awal }])
       .select();
     if (error) throw error;
     res.status(201).json({ message: "Data berhasil ditambahkan!", data });
@@ -100,16 +100,16 @@ export const postInputData = async (req, res) => {
 export const updateData = async (req, res) => {
   try {
     const { id } = req.params;
-    const { lokasi_id, komoditas_id, harga_per_kg } = req.body;
+    const { lokasi_id, komoditas_id, harga_per_kg, stok_awal } = req.body;
     if (!id) {
       return res.status(400).json({ message: "ID data tidak ditemukan." });
     }
-    if (!lokasi_id || !komoditas_id || !harga_per_kg) {
+    if (!lokasi_id || !komoditas_id || harga_per_kg === undefined || stok_awal === undefined) {
       return res.status(400).json({ message: "Semua field wajib diisi." });
     }
     const { data, error } = await supabase
       .from("input_data")
-      .update({ lokasi_id, komoditas_id, harga_per_kg })
+      .update({ lokasi_id, komoditas_id, harga_per_kg, stok_awal })
       .eq('id', id)
       .select(`*, lokasi_pasar (id, nama_lokasi), komoditas (id, nama_komoditas)`);
     if (error) throw error;
